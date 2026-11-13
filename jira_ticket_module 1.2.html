@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Spot What’s Missing: Writing Actionable Jira Tickets</title>
+<style>
+:root{--ink:#172b4d;--muted:#5e6c84;--bg:#f4f5f7;--card:#fff;--line:#c1c7d0;--accent:#0052cc;--hl:#fff0b3;--good:#006644;--goodbg:#e3fcef;--bad:#bf2600;--badbg:#ffebe6}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 "Segoe UI",system-ui,-apple-system,Helvetica,Arial,sans-serif}
+header{background:var(--ink);color:#fff;padding:14px 24px}
+header p{margin:0;font-size:15px}
+.bar{height:6px;background:#091e42}.bar i{display:block;height:100%;width:0;background:#4c9aff;transition:width .3s}
+main{max-width:760px;margin:0 auto;padding:28px 20px 100px}
+h1{font-size:30px;line-height:1.2;margin:0 0 14px}
+h2{font-size:24px;line-height:1.25;margin:0 0 12px}
+h3{font-size:18px;line-height:1.3;margin:22px 0 -8px}
+p{margin:0 0 14px;max-width:68ch}
+.screen[hidden]{display:none}
+.note{background:#deebff;border-left:4px solid var(--accent);padding:12px 16px;border-radius:3px}
+.ticket{background:var(--card);border:1px solid var(--line);border-radius:4px;margin:18px 0;font-size:16px}
+.ticket>b{display:block;background:#ebecf0;padding:8px 14px;border-bottom:1px solid var(--line);font-size:14px;color:var(--muted);font-weight:600}
+.row{display:grid;grid-template-columns:150px 1fr;gap:12px;padding:10px 14px;border-bottom:1px solid #ebecf0}
+.row:last-child{border:0}
+.row dt{color:var(--muted);font-size:15px}.row dd{margin:0;white-space:pre-line}
+.row.hl{background:var(--hl);outline:2px solid #ffc400;outline-offset:-2px}
+.empty{background:#5243aa;color:#fff;font-size:12px;padding:1px 7px;border-radius:3px;font-weight:700}
+.thread{background:var(--card);border:1px solid var(--line);border-radius:4px;padding:6px 14px;margin:18px 0}
+.msg{padding:8px 0;border-bottom:1px solid #ebecf0;font-size:16px}.msg:last-child{border:0}
+.msg span{font-weight:700;margin-right:8px}
+.ba{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+.ba div{border:1px solid var(--line);border-radius:4px;padding:10px 14px;background:var(--card)}
+.ba div:last-child{border-color:var(--good);background:var(--goodbg)}
+.ba small{display:block;color:var(--muted);margin-bottom:4px}
+fieldset{border:1px solid var(--line);border-radius:4px;background:var(--card);margin:14px 0;padding:10px 16px}
+legend{font-weight:700;padding:0 6px}
+label.opt{display:flex;gap:10px;align-items:center;padding:7px 0;cursor:pointer}
+input[type=checkbox]{width:20px;height:20px}
+textarea{width:100%;min-height:72px;font:inherit;padding:10px;border:1px solid var(--line);border-radius:4px}
+.fb{list-style:none;padding:0;margin:14px 0}
+.fb li{padding:10px 14px;margin-bottom:8px;border-radius:4px;border-left:5px solid}
+.fb .ok{background:var(--goodbg);border-color:var(--good)}.fb .no{background:var(--badbg);border-color:var(--bad)}
+button{font:inherit;font-weight:600;border:0;border-radius:4px;padding:10px 20px;cursor:pointer;background:var(--accent);color:#fff}
+button.alt{background:#ebecf0;color:var(--ink)}
+button:disabled{opacity:.4;cursor:not-allowed}
+:focus-visible{outline:3px solid #ffab00;outline-offset:2px}
+nav{position:fixed;left:0;right:0;bottom:0;background:#fff;border-top:1px solid var(--line);padding:12px 20px;display:flex;justify-content:space-between;align-items:center}
+nav .step{color:var(--muted);font-size:15px}
+.recap li{margin-bottom:8px}
+@media(max-width:600px){.row{grid-template-columns:1fr;gap:2px}.ba{grid-template-columns:1fr}h1{font-size:26px}}
+</style>
+</head>
+<body>
+<header><p>Spot What’s Missing: Writing Actionable Jira Tickets</p></header>
+<div class="bar" aria-hidden="true"><i id="prog"></i></div>
+<main id="main" tabindex="-1">
+
+<!-- 1. Welcome -->
+<section class="screen">
+  <h1>"What's missing from this ticket?" <br /> Make sure your tickets have everything required for developers to take action!</h1>
+  <p>By the end of this module, you'll be able to identify the four core elements of an actionable Jira ticket and describe how they inform the work that goes into resolving a ticket. This module will take about 10 minutes to complete.</p>
+  <p class="note">Before you start, think of a ticket from a recent sprint that left you with questions and delayed your work. What information would have helped you get started right away?</p>
+<!--[Do you think we need the "nothing here is saved, so keep it in mind" text here? Do we want to encourage learners to take notes, or is it better aligned with andragogy to let them determine how they'll support themselves as they progress through the module?]
+-->
+<p><em>All sample tickets are fictional.</em></p>
+</section>
+
+<!-- 2. Understanding the problem -->
+<section class="screen" hidden>
+  <h2>Where do you start?</h2>
+  <p>The intent of this ticket is clear: something isn’t working. But if it were assigned to you, how would you know where to begin?</p>
+  <div class="ticket" data-id="t1v"></div>
+  <p>Does this look familiar?</p>
+  <div class="thread" role="group" aria-label="Example clarification thread">
+    <div class="msg"><span>Dev</span>What browser is this happening in?</div>
+    <div class="msg"><span>Dev</span>Does “nonfunctional” mean it isn’t clickable, nothing happens when clicked, or the downloaded file won’t open?</div>
+    <div class="msg"><span>Dev</span>How widespread is this? How many lessons are affected?</div>
+    <div class="msg"><span>Dev</span>What’s the expected behavior for this button?</div>
+  </div>
+  <p>Every answer requires a round trip across time zones that can add up to a day or more before work can begin. Every missing or murky detail becomes a blocker. 
+  <br/>A developer-ready ticket has four elements: <strong>scope</strong>, <strong>expected behavior</strong>, <strong>steps to reproduce</strong>, and <strong>acceptance criteria</strong>.</br></p>
+</section>
+
+<!-- 3. Scope -->
+<section class="screen" hidden>
+  <h2>The Summary describes the "what" and "where"</h2>
+  <p>Keep the Summary simple! Start with a verb that names the expected action rather than simply describing the problem.</p>
+  <div class="ba">
+    <div><small>Before</small>Download button nonfunctional</div>
+    <div><small>After</small>Fix download button on lesson transcript pages</div>
+  </div>
+  <div class="ticket" data-id="t1" data-hl="summary"></div>
+  <p>The new Summary names the component, the context, and the action needed, defining the scope before anyone opens the full ticket.</p>
+</section>
+
+<!-- 4. Description -->
+<section class="screen" hidden>
+  <h2>Describe expected behavior and reproduction steps</h2>
+  <p>Jira is a workflow tool, not a documentation repository, so keep the Description brief but useful.
+  <br/>For a bug, state the <strong>expected</strong> versus the <strong>actual</strong> behavior, then list the <strong>steps to reproduce</strong>: environment, inputs, actions, and what you observed. That lets the person fixing it retrace the path to the error.</br></p>
+  <div class="ticket" data-id="t1" data-hl="desc"></div>
+</section>
+
+<!-- 5. Acceptance criteria -->
+<section class="screen" hidden>
+  <h2>Acceptance criteria provides a definition of done</h2>
+  <p>How will we know when the required work is complete? List the criteria in the dedicated field. They work as a checklist to confirm the fix or feature was delivered completely, so the developer doesn’t have to ask where the finish line is.</p>
+  <div class="ticket" data-id="t1" data-hl="ac"></div>
+</section>
+
+<!-- 6-7. Practice (built by script) -->
+<section class="screen" hidden id="p0"></section>
+<section class="screen" hidden id="p1"></section>
+
+<!-- 8. Wrap-up -->
+<section class="screen" hidden>
+  <h2>Wrap-up</h2>
+  <p>Here are both practice tickets again, now fully filled in. Additions are in <strong>bold</strong>. Compare each one with the version you evaluated.</p>
+  <h3>Practice 1: Feature request</h3>
+  <div class="ticket" data-id="t2done"></div>
+  <h3>Practice 2: Bug report</h3>
+  <div class="ticket" data-id="t3done"></div>
+  <ul class="recap">
+    <li><strong>Scope:</strong> the Summary names what and where, starting with a verb.</li>
+    <li><strong>Expected behavior:</strong> the Description says what should happen, and for bugs, what actually happens.</li>
+    <li><strong>Steps to reproduce:</strong> environment, inputs, actions, and the observed result.</li>
+    <li><strong>Acceptance criteria:</strong> a checkable definition of done.</li>
+  </ul>
+  <p class="note" id="score"></p>
+  <p><strong>Before you create your next ticket, ask yourself: could a teammate start this without asking me anything?</strong></p>
+  <p>Next, you’ll apply this to real tickets from your own backlog in the group session.</p>
+  <p><button type="button" class="alt" id="retake">Retake the practice quiz</button></p>
+</section>
+
+</main>
+<nav>
+  <button class="alt" id="back" type="button">Back</button>
+  <span class="step" id="step" aria-live="polite"></span>
+  <button id="next" type="button">Next</button>
+</nav>
+
+<script>
+const T = {
+  t1v: {type:"Bug", summary:"Download button nonfunctional", desc:"Users reporting download button doesn’t work on the lesson transcript page. Please fix ASAP.", ac:""},
+  t1: {type:"Bug", summary:"Fix download button on lesson transcript pages",
+    desc:"Expected: Clicking “Download transcript” saves the transcript as a PDF.\nActual: Nothing happens. No file downloads and no error appears.\nSteps to reproduce:\n1. Log in as a student.\n2. Open any lesson transcript page (for example, Lesson 3).\n3. Click “Download transcript.”\nEnvironment: Chrome, Windows 11. Happens every time.",
+    ac:"• The button downloads the transcript as a PDF on all lesson transcript pages.\n• The PDF opens and matches the on-screen transcript.\n• Verified in Chrome, Safari, and Firefox."},
+  t2: {type:"Feature request", summary:"Add enrollment numbers to User Metrics dashboard CSV export", desc:"Admins would like enrollment numbers included in the CSV export from the dashboard.", ac:""},
+  t2done: {type:"Feature request", summary:"Add enrollment numbers to User Metrics dashboard CSV export",
+    desc:"Admins would like enrollment numbers included in the CSV export from the dashboard.\n<strong>Expected: The CSV export includes an “Enrollments” column showing total enrollments per course, for the date range selected on the dashboard. The new column appears last.</strong>",
+    ac:"<strong>• The export has an “Enrollments” column as the last column.\n• Values match the dashboard totals for the selected date range.\n• The file still opens correctly in Excel.</strong>"},
+  t3: {type:"Bug", summary:"Fix PDF upload error on Submit Assignment page", desc:"Expected: PDF files under 10 MB upload successfully.\nActual: The upload fails with “Something went wrong.” It happened with a 2 MB PDF.", ac:""},
+  t3done: {type:"Bug", summary:"Fix PDF upload error on Submit Assignment page",
+    desc:"Expected: PDF files under 10 MB upload successfully.\nActual: The upload fails with “Something went wrong.” It happened with a 2 MB PDF.\n<strong>Steps to reproduce:\n1. Log in as a student.\n2. Open the Submit Assignment page for any assignment.\n3. Click “Upload file” and select a PDF under 10 MB (for example, a 2 MB file).\n4. Click “Submit.”\nEnvironment: Chrome, Windows 11. Happens every time.</strong>",
+    ac:"<strong>• PDF files up to 10 MB upload successfully on the Submit Assignment page.\n• Files over 10 MB show a clear size-limit message instead of “Something went wrong.”\n• Verified in Chrome, Safari, and Firefox.</strong>"}
+};
+const KEYS = {scope:"Scope", expected:"Expected behavior", steps:"Steps to reproduce", ac:"Acceptance criteria"};
+const P = [
+  {id:"t2", missing:["expected","ac"],
+   why:{scope:"Covered: the Summary names the dashboard and the change.",
+        expected:"Missing: the Description doesn’t say which enrollment numbers (per course or per user), for what date range, or where the column goes, so a developer has to guess the desired outcome.",
+        steps:"Not needed here: this is a feature request, so there is nothing to reproduce.",
+        ac:"Missing: with no acceptance criteria there is no finish line, so the developer can’t confirm the work is done without checking back with the author."},
+   model:"Which enrollment numbers do you want (per course or per user), and for what date range?"},
+  {id:"t3", missing:["steps","ac"],
+   why:{scope:"Covered: the Summary names the problem (PDF upload error) and the page.",
+        expected:"Covered: the Description states expected versus actual behavior.",
+        steps:"Missing: there is no browser or environment, no step-by-step path, and no note on whether it happens every time, so a developer can’t retrace the error.",
+        ac:"Missing: nothing defines done (for example, which file types and sizes must upload), so the developer and QA may disagree later."},
+   model:"Which browser are you using, what steps lead to the error, and does it fail every time?"}
+];
+const score = [null, null], resets = [];
+
+function ticket(id, hl){
+  const t = T[id], h = k => hl === k ? " hl" : "";
+  return `<b>Create Issue · ${t.type}</b><dl style="margin:0">
+    <div class="row${h("summary")}"><dt>Summary</dt><dd>${t.summary}</dd></div>
+    <div class="row${h("desc")}"><dt>Description</dt><dd>${t.desc}</dd></div>
+    <div class="row${h("ac")}"><dt>Acceptance Criteria</dt><dd>${t.ac || '<span class="empty">EMPTY</span>'}</dd></div></dl>`;
+}
+document.querySelectorAll(".ticket").forEach(e => e.innerHTML = ticket(e.dataset.id, e.dataset.hl));
+
+P.forEach((p, i) => {
+  const s = document.getElementById("p" + i);
+  s.innerHTML = `<h2>Practice ${i + 1} of 2: what’s missing?</h2>
+    <p>${i ? "Here is a bug report." : "This one is a little better than the first ticket, but it could be better."} Select every element that is missing and could block developer work.</p>
+    <div class="ticket">${ticket(p.id)}</div>
+    <fieldset><legend>Which elements are missing?</legend>
+      ${Object.keys(KEYS).map(k => `<label class="opt"><input type="checkbox" value="${k}"> ${KEYS[k]}</label>`).join("")}
+    </fieldset>
+    <label for="q${i}"><strong>What is the one question you’d still have to ask the author?</strong></label>
+    <textarea id="q${i}"></textarea>
+    <p><button type="button" id="chk${i}">Check answers</button> <button type="button" class="alt" id="rst${i}" hidden>Try again</button></p>
+    <div id="out${i}" role="status" aria-live="polite"></div>`;
+  const boxes = () => s.querySelectorAll("input[type=checkbox]");
+  document.getElementById("chk" + i).onclick = () => {
+    let right = true;
+    const items = Object.keys(KEYS).map(k => {
+      const sel = [...boxes()].find(b => b.value === k).checked, miss = p.missing.includes(k), ok = sel === miss;
+      if (!ok) right = false;
+      return `<li class="${ok ? "ok" : "no"}"><strong>${ok ? "Correct" : "Not quite"} · ${KEYS[k]}.</strong> ${p.why[k]}</li>`;
+    }).join("");
+    score[i] = right;
+    document.getElementById("out" + i).innerHTML = `<ul class="fb">${items}</ul>
+      <p class="note"><strong>A good question might be:</strong> ${p.model} Compare it with yours. Each question like this is a round trip the ticket should have prevented.</p>`;
+    boxes().forEach(b => b.disabled = true);
+    document.getElementById("chk" + i).hidden = true;
+    document.getElementById("rst" + i).hidden = false;
+  };
+  resets[i] = () => {
+    boxes().forEach(b => { b.checked = false; b.disabled = false; });
+    document.getElementById("q" + i).value = "";
+    document.getElementById("out" + i).innerHTML = "";
+    document.getElementById("chk" + i).hidden = false;
+    document.getElementById("rst" + i).hidden = true;
+    score[i] = null;
+  };
+  document.getElementById("rst" + i).onclick = resets[i];
+});
+
+const screens = [...document.querySelectorAll(".screen")], bar = document.getElementById("prog");
+let cur = 0;
+function show(n){
+  cur = n;
+  screens.forEach((s, i) => s.hidden = i !== n);
+  document.getElementById("back").disabled = n === 0;
+  document.getElementById("next").hidden = n === screens.length - 1;
+  document.getElementById("step").textContent = `Step ${n + 1} of ${screens.length}`;
+  bar.style.width = ((n + 1) / screens.length * 100) + "%";
+  if (n === screens.length - 1){
+    const got = score.filter(Boolean).length;
+    document.getElementById("score").textContent = `You identified the missing elements exactly right on ${got} of 2 practice tickets on your most recent attempt. Review the feedback on any you missed.`;
+  }
+  document.getElementById("main").focus();
+  window.scrollTo(0, 0);
+}
+document.getElementById("next").onclick = () => show(Math.min(cur + 1, screens.length - 1));
+document.getElementById("back").onclick = () => show(Math.max(cur - 1, 0));
+document.getElementById("retake").onclick = () => { resets.forEach(r => r()); show(5); };
+show(0);
+</script>
+</body>
+</html>
